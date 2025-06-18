@@ -1,75 +1,81 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const toBinary = (num: number, padding: number) =>
+  num.toString(2).padStart(padding, '0');
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const binaryTime = {
+    hours: toBinary(time.getHours(), 5),
+    minutes: toBinary(time.getMinutes(), 6),
+    seconds: toBinary(time.getSeconds(), 6),
+  };
+
+  const renderDots = (binaryStr: string) => (
+    <View style={styles.column}>
+      {binaryStr.split('').map((bit, idx) => (
+        <View
+          key={idx}
+          style={[
+            styles.dot,
+            bit === '1' ? styles.activeDot : styles.inactiveDot,
+          ]}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      ))}
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.clock}>
+        {renderDots(binaryTime.hours)}
+        {renderDots(binaryTime.minutes)}
+        {renderDots(binaryTime.seconds)}
+      </View>
+    </View>
   );
 }
 
+const dotSize = Dimensions.get('window').width * 0.08; // scalable
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: '#ddd',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  clock: {
+    flexDirection: 'row',
+    gap: 16,
+    padding: 16,
+    //backgroundColor: '#ccc',
+    //borderRadius: 12,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  column: {
+    flexDirection: 'column',
+    gap: 8,
+    alignItems: 'center',
+  },
+  dot: {
+    width: dotSize,
+    height: dotSize,
+    borderRadius: dotSize / 2,
+    borderWidth: 2,
+  },
+  activeDot: {
+    backgroundColor: '#222',
+    borderColor: '#222',
+  },
+  inactiveDot: {
+    backgroundColor: 'transparent',
+    borderColor: '#aaa',
   },
 });
