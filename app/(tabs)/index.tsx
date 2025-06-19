@@ -1,5 +1,3 @@
-// app/(tabs)/index.tsx
-import { useFonts } from 'expo-font';
 import React, { useContext, useEffect, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import { AppContext } from './_layout';
@@ -8,11 +6,6 @@ const toBinary = (num: number, padding: number) =>
   num.toString(2).padStart(padding, '0');
 
 export default function HomeScreen() {
-  const [fontsLoaded] = useFonts({
-    NType: require('../../assets/fonts/NType82-Headline.otf'),
-  });
-
-  if (!fontsLoaded) return null;
 
   const [time, setTime] = useState(new Date());
   const { landscapeMode } = useContext(AppContext);
@@ -144,7 +137,7 @@ const styles = StyleSheet.create({
   digitalClockOverlay: {
     position: 'absolute',
     fontSize: 40,
-    fontFamily: 'NType',
+    fontFamily: 'monospace',
     color: '#fff',
     bottom: 500,
     right: 0,
